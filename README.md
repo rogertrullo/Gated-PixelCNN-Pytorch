@@ -10,6 +10,7 @@ As can be seen from the equation, in order to build this model we need the eleme
 
 However this mask has the a blindspot, that means that eventhough the output doesn't see future pixels, it fails to use some of the previous ones.
 To solve this issue, the authors proposed to use two streams of masked convolutions, one in charge of the previous row(called vertical stream) and for to deal with the previous pixels in the current row (called horizontal stream). The following animation shows how the RF grows in both cases (with and w/o blind spots). This animation was generated using my code to compute RF which is available in [this repository](https://github.com/rogertrullo/Receptive-Field-in-Pytorch).
-<img src="blind_spot.gif" alt="drawing" width="200"/>  <img src="noblind_spot.gif" alt="drawing" width="200"/>
+<div style="text-align:center"><img src="blind_spot.gif" alt="drawing" width="200"/>  <img src="noblind_spot.gif" alt="drawing" width="200"/></div>
+
 
 In this repository I present my own implementation of the GatedPixelCNN framework which does not have any blind spot.
