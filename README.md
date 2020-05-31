@@ -15,4 +15,5 @@ To solve this issue, the authors proposed to use two streams of masked convoluti
 <div style="text-align:center"><img src="blind_spot.gif" alt="drawing" width="200"/>  <img src="noblind_spot.gif" alt="drawing" width="200"/></div>
 
 
-In this repository I present my own implementation of the GatedPixelCNN framework which does not have any blind spot.
+In this repository I present my own implementation of the GatedPixelCNN framework which does not have any blind spot. Below are some samples obtained from the model when trained on MNIST:
+<div style="text-align:center"><img src="digits.gif" alt="drawing" width="400"/> </div>
