@@ -51,7 +51,7 @@ class GatedConvLayer(nn.Module):
     '''
     Main building block of the framework. It implements figure 2 of the paper.
     '''
-    def __init__(self, in_channels, nfeats, kernel_size=3, mask_type='A'):
+    def __init__(self, in_channels, nfeats, kernel_size=3, mask_type='A', nclasses=None):
         super(GatedConvLayer, self).__init__()
         self.nfeats = nfeats
         self.mask_type = mask_type
@@ -61,14 +61,17 @@ class GatedConvLayer(nn.Module):
         self.hconv = MaskedConv(in_channels=in_channels, out_channels=2 * nfeats, kernel_size=kernel_size,
                                 ver_or_hor='H', mask_type=mask_type)
 
+        self.emb_f=nn.Embedding(nclasses,nfeats)
+        self.emb_h = nn.Embedding(nclasses, nfeats)
+
         self.v_to_h_conv = nn.Conv2d(in_channels=2 * nfeats, out_channels=2 * nfeats, kernel_size=1)  # 1x1 conv
 
         self.h_to_h_conv = nn.Conv2d(in_channels=nfeats, out_channels=nfeats, kernel_size=1)  # 1x1 conv
 
-    def GatedActivation(self, x):
-        return torch.tanh(x[:, :self.nfeats]) * torch.sigmoid(x[:, self.nfeats:])
+    def GatedActivation(self, x, h):
+        return torch.tanh(x[:, :self.nfeats]+self.emb_f(h)) * torch.sigmoid(x[:, self.nfeats:]+self.emb_g(h))
 
-    def forward(self, x):
+    def forward(self, x,h):
         # x should be a list of two elements [v, h]
         iv, ih = x
         ov = self.vconv(iv)
@@ -76,9 +79,9 @@ class GatedConvLayer(nn.Module):
         v2h = self.v_to_h_conv(ov)
         oh = v2h + oh_
 
-        ov = self.GatedActivation(ov)
+        ov = self.GatedActivation(ov,h)
 
-        oh = self.GatedActivation(oh)
+        oh = self.GatedActivation(oh,h)
         oh = self.h_to_h_conv(oh)
 
         ##############################################################################
@@ -114,10 +117,10 @@ class PixelCNN(nn.Module):
         )
 
 
-    def forward(self, x):
+    def forward(self, x,h):
         x = [x, x]
         for i, layer in enumerate(self.layers):
-            x = layer(x)
+            x = layer(x,h)
         logits = self.out_conv(x[1])
 
         return logits
