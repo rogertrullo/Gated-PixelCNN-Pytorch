@@ -69,7 +69,10 @@ class GatedConvLayer(nn.Module):
         self.h_to_h_conv = nn.Conv2d(in_channels=nfeats, out_channels=nfeats, kernel_size=1)  # 1x1 conv
 
     def GatedActivation(self, x, h):
-        return torch.tanh(x[:, :self.nfeats]+self.emb_f(h)) * torch.sigmoid(x[:, self.nfeats:]+self.emb_g(h))
+
+        tan_r=torch.tanh(x[:, :self.nfeats]+self.emb_f(h).unsqueeze(2).unsqueeze(3))
+        sig_r=torch.sigmoid(x[:, self.nfeats:]+self.emb_h(h).unsqueeze(2).unsqueeze(3))
+        return tan_r*sig_r
 
     def forward(self, x,h):
         # x should be a list of two elements [v, h]
