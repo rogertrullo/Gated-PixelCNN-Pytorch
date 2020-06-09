@@ -98,12 +98,12 @@ class PixelCNN(nn.Module):
     Klevels indicates the number of possible values that a pixel can have e.g 2 for binary images or
     256 for gray level imgs.
     '''
-    def __init__(self, nlayers, in_channels, nfeats, Klevels=2):
+    def __init__(self, nlayers, in_channels, nfeats, Klevels=2, ksz_A=5, ksz_B=3):
         super(PixelCNN, self).__init__()
         self.layers = nn.ModuleList(
-            [GatedConvLayer(in_channels=in_channels, nfeats=nfeats, mask_type='A', kernel_size=7)])
+            [GatedConvLayer(in_channels=in_channels, nfeats=nfeats, mask_type='A', kernel_size=ksz_A)])
         for i in range(nlayers):
-            gatedconv = GatedConvLayer(in_channels=nfeats, nfeats=nfeats, mask_type='B', kernel_size=5)
+            gatedconv = GatedConvLayer(in_channels=nfeats, nfeats=nfeats, mask_type='B', kernel_size=ksz_B)
             self.layers.append(gatedconv)
         #TODO make kernel sizes as params
 
