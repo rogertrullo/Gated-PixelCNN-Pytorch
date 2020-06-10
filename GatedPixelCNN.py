@@ -12,7 +12,7 @@ class MaskedConv(nn.Conv2d):
     Class that implements the masking for both streams vertical and horizontal.
     It is different if it is the first layer (A) or subsequent layers (B)
     '''
-    def __init__(self, in_channels, out_channels, kernel_size, mask_type='A', ver_or_hor='V'):
+    def __init__(self, in_channels, out_channels, kernel_size, mask_type='A', ver_or_hor='V', use_gpu=True):
         assert mask_type in ['A', 'B'], 'only A or B are possible mask types'
         assert ver_or_hor in ['V', 'H'], 'only H or V are possible ver_or_hor types'
 
@@ -25,7 +25,9 @@ class MaskedConv(nn.Conv2d):
             pad = (kernel_size - 1) // 2
 
         super().__init__(in_channels, out_channels, kernel_size=ksz, padding=pad)
-        self.mask = torch.zeros_like(self.weight).cuda()#TODO make gpu optional
+        self.mask = torch.zeros_like(self.weight)
+        if use_gpu:
+            self.mask = self.mask.cuda()#TODO make gpu optional
 
         if mask_type == 'A':
             if ver_or_hor == 'V':  # NXN mask
